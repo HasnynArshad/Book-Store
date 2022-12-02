@@ -1,26 +1,25 @@
-// LTg8s6xPF7IAcXIb
-//console.log("Hello World!!!!");
-
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require('cors');
 const router = require("./routes/book-routes");
+const dbConnect = require("./utilities/dbConnect");
 const app = express();
-
+app.use(express.json());
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 //Middlewares
+dbConnect();
 
 app.use(express.json());
 app.use("/books", router); //localhost:5000/books
 
-// app.use("/", (req, res, next) => {
-//   res.send("This is our starting app");
-// });
 
-mongoose
-  .connect(
-    "mongodb+srv://admin:LTg8s6xPF7IAcXIb@cluster0.p56kuoi.mongodb.net/?retryWrites=true&w=majority"
-  )
-  .then(() => console.log("Connected to the database"))
-  .then(() => {
-    app.listen(5000);
-  })
-  .catch((err) => console.log(err));
+app.use("*", (req, res) => {
+  console.log("in * condition of app.use");
+  res.status(500).json(`Internal Server Error at ${req.originalUrl}`);
+});
+
+app.listen(process.env.PORT, () => {
+  console.log(`server is listening at port ${process.env.PORT}`);
+});
+
